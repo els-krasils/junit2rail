@@ -1,0 +1,42 @@
+{
+  "author": {
+    "name": "Sergey Krasilnikov"
+  },
+  "bin": {
+    "junit2rail": "index.js"
+  },
+  "dependencies": {
+    "html-entities": "^1.1.3",
+    "minimist": "^1.2.0",
+    "node-testrail": "^0.0.12",
+    "xml-js": "^1.0.2",
+    "yamljs": "^0.2.4"
+  },
+  "description": "Command line tool for reporting junit results to testrail.",
+  "devDependencies": {},
+  "directories": {},
+  "keywords": [
+    "testrail",
+    "junit",
+    "xml"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "gromalog"
+    }
+  ],
+  "name": "junit2rail",
+  "optionalDependencies": {},
+  "preferGlobal": true,
+  "readme": "ERROR: No README data found!",
+  "bugs": "https://github.com/qpv-qa/junit2rail/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qpv-qa/junit2rail.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.1"
+}
