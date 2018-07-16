@@ -34,8 +34,10 @@ function Core({testRailUrl, testRailUser, testRailPassword, debugMode}) {
      *   The path to the junit XML file or directory of files.
      * @param {boolean} logCoverage
      *   whether to log coverage info into console
+     * @param {number} skipStatus
+     *   TestRail custom status code for skipped results
      */
-    this.report = async function({runId, planId, reportsPath, logCoverage}) {
+    this.report = async function({runId, planId, reportsPath, logCoverage, skipStatus}) {
 
         debug('Attempting to report runs for test cases.')
 
@@ -49,7 +51,7 @@ function Core({testRailUrl, testRailUser, testRailPassword, debugMode}) {
         let jUnitReportsManager = new JUnitReportsManager({debug})
         let caseRuns = jUnitReportsManager.loadCasesFromReportsPath(reportsPath)
 
-        let reportDispatcher = new ReportDispatcher({debug})
+        let reportDispatcher = new ReportDispatcher({debug, skipStatus})
         let planResults = reportDispatcher.dispatch({
             caseRuns,
             resolveCaseIdsFromCaseRun: caseRunMapManager.resolveCaseIdsFromCaseRun,

@@ -1,6 +1,6 @@
 'use strict'
 
-function ReportDispatcher({debug}) {
+function ReportDispatcher({debug, skipStatus}) {
     this.dispatch = ({caseRuns, resolveCaseIdsFromCaseRun, resolveTestRunsFromCasId}) => {
 
         // firstly group case runs by TestRail case id; one case run may relate to multiple TestRail cases
@@ -19,7 +19,8 @@ function ReportDispatcher({debug}) {
                 caseRunResult.statusId = 5
                 caseRunResult.comment += caseRun.failures.join('\n')
             } else if (caseRun.skipped.length > 0) {
-                // TODO: what testRailClient status to map for skipped cases? skip reporting for now
+                caseRunResult.statusId = skipStatus
+                caseRunResult.comment += caseRun.skipped.join('\n')
             } else {
                 // Otherwise, the test case passed. 1 means pass.
                 caseRunResult.statusId = 1
@@ -54,7 +55,7 @@ function ReportDispatcher({debug}) {
                     caseSummary.status_id = runResult.statusId
                 }
                 if (runResult.comment !== '') {
-                    caseSummary.comment += runResult.testName + ': ' + runResult.comment + '\n'
+                    caseSummary.comment += runResult.testName + ' (status ' + runResult.statusId + '): ' + runResult.comment + '\n'
                 }
             }
             if (caseSummary.elapsed === 0) {
@@ -72,9 +73,12 @@ function ReportDispatcher({debug}) {
                     planResults[runId] = []
                 }
                 planResults[runId].push(caseSummary)
-
             } else {
-                // TODO What if 0? What if > 1? skip for now
+                let testRunsStr = ''
+                if (testRuns.length > 0) {
+                    testRunsStr = '(' + testRuns + ') '
+                }
+                console.log('Case #' + caseId + ' is mentioned in ' + testRuns.length + ' TestRail test runs ' + testRunsStr + 'and thus its result is not reported')
             }
         }
 
