@@ -5,7 +5,7 @@ let path  = require('path')
 
 function CaseRunMapManager({debug}) {
 
-    let caseMapRunToRail = {projectId: null, caseNameToIdMap: {}, caseClassAndNameToIdMap: {}}
+    let caseMapRunToRail = {caseNameToIdMap: {}, caseClassAndNameToIdMap: {}}
 
     let coverage = { // a collection of case and suit names, used by resolveCaseIdFromTestCase method, for coverage analysis
         caseNameUsed: {},
