@@ -44,7 +44,7 @@ function ReportDispatcher({debug, skipStatus}) {
             debug('caseId = ' + caseId)
             let caseSummary = {
                 case_id: caseId,
-                status_id: 1,
+                status_id: 0,
                 elapsed: 0,
                 comment: ''
             }
@@ -63,6 +63,14 @@ function ReportDispatcher({debug, skipStatus}) {
             }
             caseSummary.elapsed = '' + caseSummary.elapsed + 's'
             debug('caseSummary.elapsed = ' + caseSummary.elapsed)
+
+            if (caseSummary.status_id === 0) {
+                console.log('Case #' + caseId + ' result could not be defined')
+                if (caseSummary.comment !== '') {
+                    console.log(caseSummary.comment)
+                }
+                continue
+            }
 
             let testRuns = resolveTestRunsFromCasId(caseId)
             debug('testRuns:')
