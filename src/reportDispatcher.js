@@ -7,20 +7,27 @@ function ReportDispatcher({debug, skipStatus}) {
         let caseResults = {}
         for (let caseRun of caseRuns) {
             let caseRunResult = {
+                statusId   : undefined,
+                comment    : '',
+                elapsed    : caseRun.time,
+                defects    : '',
                 testName   : caseRun.testName,
                 railCaseIds: resolveCaseIdsFromCaseRun(caseRun.testClass, caseRun.testName),
-                elapsed    : caseRun.time,
-                statusId   : undefined,
-                comment    : ''
             }
 
             if (caseRun.failures.length > 0) {
                 // If test case failure elements exist, there was a failure. 5 means failure. Add failure messages
                 caseRunResult.statusId = 5
-                caseRunResult.comment += caseRun.failures.join('\n')
+                caseRunResult.comment  = caseRun.failures.join('\n')
             } else if (caseRun.skipped.length > 0) {
                 caseRunResult.statusId = skipStatus
-                caseRunResult.comment += caseRun.skipped.join('\n')
+                caseRunResult.comment  = caseRun.skipped.join('\n')
+                // regex taken from Shaun Dunning comment at
+                // https://community.atlassian.com/t5/Bitbucket-questions/Regex-pattern-to-match-JIRA-issue-key/qaq-p/233319
+                let foundIssueIds = caseRunResult.comment.match(/((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g)
+                if (Array.isArray(foundIssueIds)) {
+                    caseRunResult.defects = foundIssueIds.join(',')
+                }
             } else {
                 // Otherwise, the test case passed. 1 means pass.
                 caseRunResult.statusId = 1
@@ -43,10 +50,11 @@ function ReportDispatcher({debug, skipStatus}) {
         for (let caseId of Object.keys(caseResults)) {
             debug('caseId = ' + caseId)
             let caseSummary = {
-                case_id: caseId,
+                case_id  : caseId,
                 status_id: 0,
-                elapsed: 0,
-                comment: ''
+                comment  : '',
+                elapsed  : 0,
+                defects  : '',
             }
             for (let runResult of caseResults[caseId]) {
                 debug('runResult: ' + JSON.stringify(runResult, undefined, 4))
@@ -56,6 +64,12 @@ function ReportDispatcher({debug, skipStatus}) {
                 }
                 if (runResult.comment !== '') {
                     caseSummary.comment += runResult.testName + ' (status ' + runResult.statusId + '): ' + runResult.comment + '\n'
+                }
+                if (runResult.defects !== '') {
+                    if (caseSummary.defects !== '') {
+                        caseSummary.defects += ','
+                    }
+                    caseSummary.defects += runResult.defects
                 }
             }
             if (caseSummary.elapsed === 0) {
