@@ -24,10 +24,11 @@ function ReportDispatcher({debug, skipStatus}) {
                 caseRunResult.comment  = caseRun.skipped.join('\n')
                 // regex taken from Shaun Dunning comment at
                 // https://community.atlassian.com/t5/Bitbucket-questions/Regex-pattern-to-match-JIRA-issue-key/qaq-p/233319
-                let foundIssueIds = caseRunResult.comment.match(/((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g)
-                if (Array.isArray(foundIssueIds)) {
-                    caseRunResult.defects = foundIssueIds.join(',')
-                }
+                let mask = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g
+                let foundIssueIds = []
+                    .concat(caseRunResult.testName.match(mask) || [])
+                    .concat(caseRunResult.comment.match(mask) || [])
+                caseRunResult.defects = foundIssueIds.join(',')
             } else {
                 // Otherwise, the test case passed. 1 means pass.
                 caseRunResult.statusId = 1
