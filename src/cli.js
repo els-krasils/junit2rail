@@ -31,12 +31,12 @@ module.exports = function testrailCliFactory(argv, process) {
     return {
         report: async () => {
             let reportConfigs = {}
-            let skipStatus = parseInt(argv.skipStatus)
-            reportConfigs.runId       = argv.runId      || argv.r
-            reportConfigs.planId      = argv.planId     || argv.p
-            reportConfigs.reportsPath = argv.file       || argv.f
-            reportConfigs.skipStatus  = isNaN(skipStatus) ? 0 : skipStatus
-            reportConfigs.logCoverage = argv.coverage   || false
+            let knownIssueStatus = parseInt(argv.knownIssueStatus)
+            reportConfigs.runId            = argv.runId    || argv.r
+            reportConfigs.planId           = argv.planId   || argv.p
+            reportConfigs.reportsPath      = argv.file     || argv.f
+            reportConfigs.knownIssueStatus = isNaN(knownIssueStatus) ? 0 : knownIssueStatus
+            reportConfigs.logCoverage      = argv.coverage || false
             if (!reportConfigs.reportsPath || (reportConfigs.runId === undefined && reportConfigs.planId === undefined)) {
                 console.error('You must supply a file (-f or --file=) and either runId (-r or --runId=) or planId (-p or --planId=).')
                 debug('files: "' + reportConfigs.reportsPath + '", runId: "' + reportConfigs.runId + '", planId: "' + reportConfigs.planId + '"')

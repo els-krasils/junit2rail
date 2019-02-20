@@ -1,6 +1,6 @@
 'use strict'
 
-function ReportDispatcher({debug, skipStatus}) {
+function ReportDispatcher({debug, knownIssueStatus}) {
     this.dispatch = ({caseRuns, resolveCaseIdsFromCaseRun, resolveTestRunsFromCasId}) => {
 
         // firstly group case runs by TestRail case id; one case run may relate to multiple TestRail cases
@@ -20,14 +20,18 @@ function ReportDispatcher({debug, skipStatus}) {
                 caseRunResult.statusId = 5
                 caseRunResult.comment  = caseRun.failures.join('\n')
             } else if (caseRun.skipped.length > 0) {
-                caseRunResult.statusId = skipStatus
                 caseRunResult.comment  = caseRun.skipped.join('\n')
                 // regex taken from Shaun Dunning comment at
                 // https://community.atlassian.com/t5/Bitbucket-questions/Regex-pattern-to-match-JIRA-issue-key/qaq-p/233319
-                let mask = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g
+                let mask = /([Kk]\/[Ii]|[Kk]nown issue): ([A-Z]{1}[A-Z0-9]+-\d+)/g
                 let foundIssueIds = []
-                    .concat(caseRunResult.testName.match(mask) || [])
-                    .concat(caseRunResult.comment.match(mask) || [])
+                    .concat((caseRunResult.testName.match(mask) || []).map(expression => mask.exec(expression)[2]))
+                    .concat((caseRunResult.comment.match(mask) || []).map(expression => mask.exec(expression)[2]))
+                if (foundIssueIds.length === 0) {
+                    // if no issues found, skip the result
+                    continue
+                }
+                caseRunResult.statusId = knownIssueStatus
                 caseRunResult.defects = foundIssueIds.join(',')
             } else {
                 // Otherwise, the test case passed. 1 means pass.
