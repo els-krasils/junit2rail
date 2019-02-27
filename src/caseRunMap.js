@@ -26,14 +26,11 @@ function CaseRunMapManager({debug}) {
      *   Returns caseIds or empty array on failure to match.
      */
     this.resolveCaseIdsFromCaseRun = (testClass, testName) => {
-        let railCaseIds = undefined
-
         debug(testName)
 
         //First try to find case id in case name; it should be enclosed in square brackets with a number sign attached at left side
-        if (testName.match(/#\[\d{1,6}]/) !== null) {
-            railCaseIds = [testName.match(/#\[\d{1,6}]/)[0].match(/\d{1,6}/)[0]]
-        }
+        let railCaseIds = (testName.match(/#\[\d{1,6}]/g) || [])
+            .map(el => el.match(/\d{1,6}/)[0])
 
         // Then check if there's a matching caseClassAndNameToIdMap class.
         if (railCaseIds === undefined && caseMapRunToRail.caseClassAndNameToIdMap && caseMapRunToRail.caseClassAndNameToIdMap[testClass]) {
