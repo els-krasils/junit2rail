@@ -29,8 +29,12 @@ function CaseRunMapManager({debug}) {
         debug(testName)
 
         //First try to find case id in case name; it should be enclosed in square brackets with a number sign attached at left side
-        let railCaseIds = (testName.match(/#\[\d{1,6}]/g) || [])
-            .map(el => el.match(/\d{1,6}/)[0])
+        let railCaseIds = testName.match(/#\[\d{1,6}]/g)
+        if (railCaseIds === null) {
+            railCaseIds = undefined
+        } else {
+            railCaseIds = railCaseIds.map(el => el.match(/\d{1,6}/)[0])
+        }
 
         // Then check if there's a matching caseClassAndNameToIdMap class.
         if (railCaseIds === undefined && caseMapRunToRail.caseClassAndNameToIdMap && caseMapRunToRail.caseClassAndNameToIdMap[testClass]) {

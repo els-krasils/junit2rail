@@ -41,16 +41,21 @@ function Core({testRailUrl, testRailUser, testRailPassword, debugMode}) {
 
         debug('Attempting to report runs for test cases.')
 
+        debug('>>>>>>>>>> testrail map:')
         let testRailManager = new TestRailManager({testRailUrl, testRailUser, testRailPassword, debug})
         await testRailManager.setup({runId, planId})
 
         let caseRunMapManager = new CaseRunMapManager({debug})
         // TODO path should be configurable
         caseRunMapManager.loadMapFromFile('./.testrail-cli.json')
+        debug('>>>>>>>>>> caseRunMap:')
+        debug(JSON.stringify(caseRunMapManager.getMap(), undefined, 4))
 
+        debug('>>>>>>>>>> jUnit report:')
         let jUnitReportsManager = new JUnitReportsManager({debug})
         let caseRuns = jUnitReportsManager.loadCasesFromReportsPath(reportsPath)
 
+        debug('>>>>>>>>>> dispatch:')
         let reportDispatcher = new ReportDispatcher({debug, knownIssueStatus})
         let planResults = reportDispatcher.dispatch({
             caseRuns,
